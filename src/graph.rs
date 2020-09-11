@@ -305,6 +305,38 @@ impl Graph {
         Node::UriNode { uri: uri.clone() }
     }
 
+    /// Creates a new URI node, specifying the namespace and the id
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use rdf::namespace::Namespace;
+    /// use rdf::graph::Graph;
+    /// use rdf::node::Node;
+    /// use rdf::uri::Uri;
+    ///
+    /// let ns = Namespace::new("example".to_string(), Uri::new("http://example.org/".to_string()));
+    ///
+    /// let graph = Graph::new(None);
+    /// let uri_node = graph.create_uri_node_from_namespace_and_id(&ns, "localName");
+    ///
+    /// assert_eq!(uri_node, Node::UriNode {
+    ///   uri: Uri::new("http://example.org/localName".to_string())
+    /// });
+    /// ```
+    pub fn create_uri_node_from_namespace_and_id(&self, ns: &Namespace, id: &str) -> Node {
+        let mut uri_string = "".to_string();
+
+        uri_string.push_str(ns.uri().to_owned().to_string());
+
+        uri_string.push_str(id);
+
+        Node::UriNode {
+            uri: Uri::new(uri_string.to_string())
+        }
+    }
+
+
     /// Creates a new URI node from a string slice.
     /// 
     /// # Examples
@@ -334,7 +366,7 @@ impl Graph {
                 s.push_str(uri);
                 Uri::new(s)
             },
-            (_,_) =>  Uri::new(uri.to_string())
+            (_, _) => Uri::new(uri.to_string())
         };
 
         Node::UriNode { uri: uri }
