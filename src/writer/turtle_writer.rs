@@ -58,6 +58,56 @@ impl<'a> RdfWriter for TurtleWriter<'a> {
         output_string.push_str(&self.write_prefixes(graph));
 
         let mut triples_vec: Vec<Triple> = graph.triples_iter().cloned().collect();
+        output_string.push_str(&self.write_triples_on_the_fly(graph, graph.triples_iter().cloned().collect()).unwrap());
+
+        if !triples_vec.is_empty() {
+            output_string.push_str(" .");
+        }
+
+        Ok(output_string)
+    }
+}
+
+impl<'a> TurtleWriter<'a> {
+    /// Constructor of `TurtleWriter`.
+    pub fn new(namespaces: &'a HashMap<String, Uri>) -> TurtleWriter<'a> {
+        TurtleWriter {
+            formatter: TurtleFormatter::new(namespaces),
+        }
+    }
+
+    /// Returns the formatted base URI as string.
+    pub fn write_base_uri(&self, graph: &Graph) -> String {
+        let mut output_string = "".to_string();
+
+        if let Some(ref base) = *graph.base_uri() {
+            output_string.push_str("@base ");
+            output_string.push_str(&self.formatter.format_uri(base));
+            output_string.push_str(" .\n");
+        }
+
+        output_string
+    }
+
+    /// Returns all prefixes as formatted string.
+    pub fn write_prefixes(&self, graph: &Graph) -> String {
+        let mut output_string = "".to_string();
+
+        // write prefixes
+        for (prefix, namespace_uri) in graph.namespaces() {
+            output_string.push_str("@prefix ");
+            output_string.push_str(prefix);
+            output_string.push_str(": <");
+            output_string.push_str(namespace_uri.to_string());
+            output_string.push_str("> .\n");
+        }
+
+        output_string
+    }
+
+    pub fn write_triples_on_the_fly(&self, graph: &Graph, mut triples_vec: Vec<Triple>) -> Result<String> {
+        let mut output_string = "".to_string();
+
         triples_vec.sort();
 
         // store subjects and predicates for grouping
@@ -121,49 +171,7 @@ impl<'a> RdfWriter for TurtleWriter<'a> {
             output_string.push_str(&turtle_object);
         }
 
-        if !graph.is_empty() {
-            output_string.push_str(" .");
-        }
-
         Ok(output_string)
-    }
-}
-
-impl<'a> TurtleWriter<'a> {
-    /// Constructor of `TurtleWriter`.
-    pub fn new(namespaces: &'a HashMap<String, Uri>) -> TurtleWriter<'a> {
-        TurtleWriter {
-            formatter: TurtleFormatter::new(namespaces),
-        }
-    }
-
-    /// Returns the formatted base URI as string.
-    fn write_base_uri(&self, graph: &Graph) -> String {
-        let mut output_string = "".to_string();
-
-        if let Some(ref base) = *graph.base_uri() {
-            output_string.push_str("@base ");
-            output_string.push_str(&self.formatter.format_uri(base));
-            output_string.push_str(" .\n");
-        }
-
-        output_string
-    }
-
-    /// Returns all prefixes as formatted string.
-    fn write_prefixes(&self, graph: &Graph) -> String {
-        let mut output_string = "".to_string();
-
-        // write prefixes
-        for (prefix, namespace_uri) in graph.namespaces() {
-            output_string.push_str("@prefix ");
-            output_string.push_str(prefix);
-            output_string.push_str(": <");
-            output_string.push_str(namespace_uri.to_string());
-            output_string.push_str("> .\n");
-        }
-
-        output_string
     }
 
     /// Converts a single node to its corresponding Turtle representation.

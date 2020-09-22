@@ -360,12 +360,12 @@ impl Graph {
     /// });
     /// ```
     pub fn create_uri_node_str(&self, uri: &str) -> Node {
-        let uri = match (uri.starts_with("#"),self.base_uri()){
-            (true, Some(base))=> {
+        let uri = match (uri.starts_with("#"), self.base_uri()) {
+            (true, Some(base)) => {
                 let mut s = base.to_string().clone();
                 s.push_str(uri);
                 Uri::new(s)
-            },
+            }
             (_, _) => Uri::new(uri.to_string())
         };
 
