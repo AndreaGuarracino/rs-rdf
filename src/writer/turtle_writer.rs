@@ -60,10 +60,6 @@ impl<'a> RdfWriter for TurtleWriter<'a> {
         let mut triples_vec: Vec<Triple> = graph.triples_iter().cloned().collect();
         output_string.push_str(&self.write_triples_on_the_fly(graph, graph.triples_iter().cloned().collect()).unwrap());
 
-        if !triples_vec.is_empty() {
-            output_string.push_str(" .");
-        }
-
         Ok(output_string)
     }
 }
@@ -169,6 +165,10 @@ impl<'a> TurtleWriter<'a> {
             // write object
             let turtle_object = self.node_to_turtle(triple.object(), &TripleSegment::Object)?;
             output_string.push_str(&turtle_object);
+        }
+
+        if !triples_vec.is_empty() {
+            output_string.push_str(" .");
         }
 
         Ok(output_string)
