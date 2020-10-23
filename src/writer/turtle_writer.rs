@@ -58,7 +58,7 @@ impl<'a> RdfWriter for TurtleWriter<'a> {
         output_string.push_str(&self.write_prefixes(graph));
 
         let mut triples_vec: Vec<Triple> = graph.triples_iter().cloned().collect();
-        output_string.push_str(&self.write_triples_on_the_fly(graph, graph.triples_iter().cloned().collect()).unwrap());
+        output_string.push_str(&self.write_triples_on_the_fly(graph, graph.triples_iter().cloned().collect(), true).unwrap());
 
         Ok(output_string)
     }
@@ -101,10 +101,12 @@ impl<'a> TurtleWriter<'a> {
         output_string
     }
 
-    pub fn write_triples_on_the_fly(&self, graph: &Graph, mut triples_vec: Vec<Triple>) -> Result<String> {
+    pub fn write_triples_on_the_fly(&self, graph: &Graph, mut triples_vec: Vec<Triple>, sort_triples : bool) -> Result<String> {
         let mut output_string = "".to_string();
 
-        triples_vec.sort();
+        if sort_triples {
+            triples_vec.sort();
+        }
 
         // store subjects and predicates for grouping
         let mut previous_subject: Option<&Node> = None;
