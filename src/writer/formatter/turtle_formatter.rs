@@ -45,7 +45,8 @@ impl<'a> RdfFormatter for TurtleFormatter<'a> {
     ) -> String {
         let mut output_string = "".to_string();
 
-        if TurtleSpecs::is_boolean_literal(literal) && *language == None && *data_type == None {
+        if (TurtleSpecs::is_boolean_literal(literal) || TurtleSpecs::is_integer_literal(literal))
+            && *language == None && *data_type == None {
             // some number or boolean
             output_string.push_str(literal);
         } else {

@@ -101,7 +101,7 @@ impl<'a> TurtleWriter<'a> {
         output_string
     }
 
-    pub fn write_triples_on_the_fly(&self, graph: &Graph, mut triples_vec: Vec<Triple>, sort_triples : bool) -> Result<String> {
+    pub fn write_triples_on_the_fly(&self, graph: &Graph, mut triples_vec: Vec<Triple>, sort_triples: bool) -> Result<String> {
         let mut output_string = "".to_string();
 
         if sort_triples {
@@ -188,14 +188,14 @@ impl<'a> TurtleWriter<'a> {
         match *node {
             Node::BlankNode { .. } =>
             // blank nodes are not allowed as predicates
-            {
-                if *segment == TripleSegment::Predicate {
-                    return Err(Error::new(
-                        ErrorType::InvalidWriterOutput,
-                        "Blank nodes are not allowed as predicates in Turtle.",
-                    ));
+                {
+                    if *segment == TripleSegment::Predicate {
+                        return Err(Error::new(
+                            ErrorType::InvalidWriterOutput,
+                            "Blank nodes are not allowed as predicates in Turtle.",
+                        ));
+                    }
                 }
-            }
             Node::LiteralNode {
                 data_type: ref dt,
                 language: ref lang,
