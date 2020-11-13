@@ -31,14 +31,14 @@ pub enum ErrorType {
 #[derive(Debug)]
 pub struct Error {
     error_type: ErrorType,
-    error: Box<StdError>,
+    error: Box<dyn StdError>,
 }
 
 impl Error {
     /// Constructor of `Error`.
     pub fn new<E>(error_type: ErrorType, error: E) -> Error
-    where
-        E: Into<Box<StdError>>,
+        where
+            E: Into<Box<dyn StdError>>,
     {
         Error {
             error_type,

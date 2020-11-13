@@ -33,7 +33,7 @@ pub struct SparqlQuery {
     variables: Vec<String>,
 
     // Patterns used as constraints.
-    patterns: Vec<Box<Pattern>>,
+    patterns: Vec<Box<dyn Pattern>>,
 }
 
 impl SparqlQuery {
@@ -55,7 +55,7 @@ impl SparqlQuery {
     }
 
     /// Add pattern to the query.
-    pub fn add_pattern(&mut self, pattern: Box<Pattern>) {
+    pub fn add_pattern(&mut self, pattern: Box<dyn Pattern>) {
         self.patterns.push(pattern);
     }
 

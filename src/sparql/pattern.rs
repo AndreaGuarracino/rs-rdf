@@ -5,7 +5,7 @@ pub trait Pattern {}
 
 /// Describes a group of triples the SPARQL `WHERE` clause should match.
 pub struct GroupPattern {
-    patterns: Vec<Box<Pattern>>,
+    patterns: Vec<Box<dyn Pattern>>,
     is_union: bool,
     is_optional: bool,
 }
@@ -53,7 +53,7 @@ impl GroupPattern {
     ///
     /// todo
     ///
-    pub fn add_pattern(&mut self, pattern: Box<Pattern>) {
+    pub fn add_pattern(&mut self, pattern: Box<dyn Pattern>) {
         self.patterns.push(pattern);
     }
 }

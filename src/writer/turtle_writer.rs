@@ -57,8 +57,7 @@ impl<'a> RdfWriter for TurtleWriter<'a> {
         output_string.push_str(&self.write_base_uri(graph));
         output_string.push_str(&self.write_prefixes(graph));
 
-        let mut triples_vec: Vec<Triple> = graph.triples_iter().cloned().collect();
-        output_string.push_str(&self.write_triples_on_the_fly(graph, graph.triples_iter().cloned().collect(), true).unwrap());
+        output_string.push_str(&self.write_triples_on_the_fly(graph.triples_iter().cloned().collect(), true).unwrap());
 
         Ok(output_string)
     }
@@ -101,7 +100,7 @@ impl<'a> TurtleWriter<'a> {
         output_string
     }
 
-    pub fn write_triples_on_the_fly(&self, graph: &Graph, mut triples_vec: Vec<Triple>, sort_triples: bool) -> Result<String> {
+    pub fn write_triples_on_the_fly(&self, mut triples_vec: Vec<Triple>, sort_triples: bool) -> Result<String> {
         let mut output_string = "".to_string();
 
         if sort_triples {
@@ -339,6 +338,28 @@ _:auto2 <http://example.org/show/localName> _:auto1 ,
         ));
 
         let result = "@prefix example: <http://example.org/> .\n".to_string();
+
+        let writer = TurtleWriter::new(graph.namespaces());
+        match writer.write_to_string(&graph) {
+            Ok(str) => assert_eq!(result, str),
+            Err(_) => assert!(false),
+        }
+    }
+
+    #[test]
+    fn test_turtle_writer_integer_literal() {
+        let mut graph = Graph::new(None);
+
+        graph.add_namespace(&Namespace::new(
+            "example".to_string(),
+            Uri::new("http://example.org/".to_string()),
+        ));
+
+        let result = "@prefix example: <http://example.org/> .\n _:auto0 example.localName 1".to_string();
+        let subject = graph.create_blank_node();
+        let predicate = graph.create_uri_node(&Uri::new("http://example.org/show/localName".to_string()));
+        let object = graph.create_integer_node(1);
+        graph.add_triple(&Triple::new(&subject, &predicate, &object));
 
         let writer = TurtleWriter::new(graph.namespaces());
         match writer.write_to_string(&graph) {
